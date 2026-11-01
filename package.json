@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "description": "Oklahoma weather desktop app with forecasts, alerts and (pending permission) ODOT traffic cameras.",
   "main": "main.js",
-  "author": "Bryce",
+  "author": "Bryson",
   "license": "MIT",
   "scripts": {
     "start": "electron .",
