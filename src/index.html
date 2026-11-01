@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self'; img-src 'self' https: data:; style-src 'self'; script-src 'self'" />
+  <title>okwx</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">okwx <span>Oklahoma Weather</span></div>
+    <select id="city" aria-label="City"></select>
+    <button id="refresh" type="button">Refresh</button>
+  </header>
+
+  <main>
+    <section id="alerts" class="alerts" hidden></section>
+
+    <section class="now card">
+      <div>
+        <div class="label">Right now in <span id="place">…</span></div>
+        <div class="temp" id="temp">--°</div>
+        <div class="cond" id="cond">Loading…</div>
+      </div>
+      <div class="details" id="details"></div>
+    </section>
+
+    <section class="card">
+      <h2>Next 12 hours</h2>
+      <div class="hourly" id="hourly"></div>
+    </section>
+
+    <section class="card">
+      <h2>7-day forecast</h2>
+      <div class="daily" id="daily"></div>
+    </section>
+
+    <section class="card">
+      <h2>Traffic cameras</h2>
+      <div id="cameras"></div>
+    </section>
+  </main>
+
+  <footer>
+    Forecast data: National Weather Service (api.weather.gov). Updated <span id="updated">never</span>.
+  </footer>
+
+  <script src="cameras.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
