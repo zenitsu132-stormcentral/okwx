@@ -1,11 +1,17 @@
 # okwx
 
-A Windows desktop weather app for Oklahoma. It shows current conditions, a 12-hour and 7-day forecast, and active alerts from the National Weather Service. ODOT traffic cameras will be added once permission is granted.
+A Windows desktop weather app focused on Oklahoma. ODOT traffic cameras will be added once permission is granted.
 
 ## Features
 
-- 14 Oklahoma cities, and the app remembers your last pick
-- Current conditions, hourly and 7-day forecast
+- Current conditions with feels-like, high and low
+- 24-hour forecast with icons and an interactive temperature chart
+- Precipitation for the next 3 hours in 15-minute steps
+- Animated NEXRAD radar (last 50 minutes) with pan, zoom and a full-size view
+- Conditions: wind compass and gusts, humidity and dew point, pressure trend, UV, visibility, air quality, precipitation
+- 10-day forecast with temperature range bars
+- "Forecast from" picker: Best match, NOAA GFS, NOAA HRRR, ECMWF, DWD ICON, Canada GEM
+- City search for any US location, and the app remembers your last pick
 - Active NWS watches and warnings
 - Refreshes on its own every 10 minutes
 - Traffic camera panel, turned off until ODOT approves it (see below)
@@ -35,7 +41,8 @@ npm run dist     # build the .exe into dist/ (run this on Windows)
 
 ## Before you ship
 
-- In `main.js`, replace `you@example.com` in `USER_AGENT` with your own contact. The NWS API asks apps to identify themselves.
+- In `weather.js`, replace `you@example.com` in `USER_AGENT` with your own contact. The NWS API asks apps to identify themselves.
+- **Data licenses:** Open-Meteo's free API and CARTO's free basemaps are for **non-commercial use**. If you sell the app or add ads, get an Open-Meteo API plan and a commercial basemap license (or switch providers).
 
 ## Traffic cameras
 
@@ -48,18 +55,26 @@ Camera settings live in `src/cameras.js`. Keep `OKWX_CAMERAS_ENABLED = false` un
 ## Project layout
 
 ```
-main.js            Electron main process (window + NWS requests)
+main.js            Electron main process (window + data requests)
+weather.js         Data layer: Open-Meteo forecast/AQI/search, NWS alerts
 preload.js         Safe bridge between the page and main process
 src/index.html     App layout
 src/styles.css     Styling
-src/app.js         City picker, rendering, auto-refresh
+src/app.js         Search, model picker, rendering, auto-refresh
+src/radar.js       Animated radar map (no map library)
+src/icons.js       Weather icons
 src/cameras.js     Traffic camera settings
 .github/workflows/build.yml   Builds the Windows .exe on GitHub Actions
 ```
 
 ## Credits
 
-Weather data from the [National Weather Service API](https://www.weather.gov/documentation/services-web-api). Not affiliated with NWS or ODOT.
+- Forecast, air quality and place search: [Open-Meteo](https://open-meteo.com) (CC BY 4.0)
+- Alerts: [National Weather Service API](https://www.weather.gov/documentation/services-web-api)
+- Radar: NEXRAD composite from [Iowa Environmental Mesonet](https://mesonet.agron.iastate.edu)
+- Basemap: © OpenStreetMap contributors © CARTO
+
+Not affiliated with any of these providers or with ODOT.
 
 ## License
 

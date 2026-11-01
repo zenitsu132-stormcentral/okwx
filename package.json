@@ -1,6 +1,6 @@
 {
   "name": "okwx",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Oklahoma weather desktop app with forecasts, alerts and (pending permission) ODOT traffic cameras.",
   "main": "main.js",
   "author": "Bryson",
@@ -16,7 +16,7 @@
   "build": {
     "appId": "com.okwx.app",
     "productName": "okwx",
-    "files": ["main.js", "preload.js", "src/**/*"],
+    "files": ["main.js", "preload.js", "weather.js", "src/**/*"],
     "win": {
       "target": ["nsis", "portable"]
     },

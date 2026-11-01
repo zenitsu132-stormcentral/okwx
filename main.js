@@ -1,53 +1,24 @@
-// Electron main process: creates the window and fetches weather data.
-// Network calls happen here (not in the page) so we can send the
-// User-Agent header the National Weather Service API asks for.
-const { app, BrowserWindow, ipcMain, shell } = require('electron');
+// Electron main process: creates the window and handles data requests.
+// Network calls happen here (not in the page) so we can set headers and
+// keep the page locked down.
+const { app, BrowserWindow, ipcMain, shell, net } = require('electron');
 const path = require('path');
+const { getWeather, searchPlaces, MODELS } = require('./weather');
 
-// NWS asks apps to identify themselves with a contact address.
-// Replace this with your own email or project URL.
-const USER_AGENT = 'okwx/0.1 (contact: you@example.com)';
-const NWS = 'https://api.weather.gov';
+const fetchFn = (url, opts) => net.fetch(url, opts);
 
-async function nws(url) {
-  const res = await fetch(url, {
-    headers: { 'User-Agent': USER_AGENT, Accept: 'application/geo+json' },
-  });
-  if (!res.ok) throw new Error(`NWS ${res.status} for ${url}`);
-  return res.json();
-}
-
-ipcMain.handle('weather:get', async (_event, lat, lon) => {
-  const point = await nws(`${NWS}/points/${lat.toFixed(4)},${lon.toFixed(4)}`);
-  const p = point.properties;
-  const [forecast, hourly, alerts] = await Promise.all([
-    nws(p.forecast),
-    nws(p.forecastHourly),
-    nws(`${NWS}/alerts/active?point=${lat.toFixed(4)},${lon.toFixed(4)}`),
-  ]);
-  return {
-    office: p.cwa,
-    radarStation: p.radarStation,
-    forecast: forecast.properties.periods,
-    hourly: hourly.properties.periods.slice(0, 12),
-    alerts: alerts.features.map((f) => ({
-      event: f.properties.event,
-      severity: f.properties.severity,
-      headline: f.properties.headline,
-      description: f.properties.description,
-      ends: f.properties.ends || f.properties.expires,
-    })),
-  };
-});
+ipcMain.handle('wx:get', (_e, opts) => getWeather(fetchFn, opts));
+ipcMain.handle('wx:search', (_e, query) => searchPlaces(fetchFn, query));
+ipcMain.handle('wx:models', () => MODELS);
 
 function createWindow() {
   const win = new BrowserWindow({
-    width: 1100,
-    height: 760,
-    minWidth: 720,
-    minHeight: 520,
+    width: 1400,
+    height: 900,
+    minWidth: 760,
+    minHeight: 560,
     title: 'okwx',
-    backgroundColor: '#0f1720',
+    backgroundColor: '#000000',
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,
@@ -60,7 +31,7 @@ function createWindow() {
 
   // Open external links in the user's browser instead of inside the app.
   win.webContents.setWindowOpenHandler(({ url }) => {
-    shell.openExternal(url);
+    if (url.startsWith('https://')) shell.openExternal(url);
     return { action: 'deny' };
   });
 }

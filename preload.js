@@ -2,5 +2,7 @@
 const { contextBridge, ipcRenderer } = require('electron');
 
 contextBridge.exposeInMainWorld('okwx', {
-  getWeather: (lat, lon) => ipcRenderer.invoke('weather:get', lat, lon),
+  getWeather: (opts) => ipcRenderer.invoke('wx:get', opts),
+  searchPlaces: (query) => ipcRenderer.invoke('wx:search', query),
+  getModels: () => ipcRenderer.invoke('wx:models'),
 });

@@ -8,45 +8,113 @@
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <header class="topbar">
-    <div class="brand">okwx <span>Oklahoma Weather</span></div>
-    <select id="city" aria-label="City"></select>
-    <button id="refresh" type="button">Refresh</button>
-  </header>
-
-  <main>
-    <section id="alerts" class="alerts" hidden></section>
-
-    <section class="now card">
-      <div>
-        <div class="label">Right now in <span id="place">…</span></div>
-        <div class="temp" id="temp">--°</div>
-        <div class="cond" id="cond">Loading…</div>
+  <div class="wrap">
+    <header class="topbar">
+      <div class="search">
+        <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"/><path d="M20 20l-4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        <input id="search" type="search" placeholder="Search a city" autocomplete="off" spellcheck="false" aria-label="Search a city" />
+        <ul id="results" class="results" hidden></ul>
       </div>
-      <div class="details" id="details"></div>
-    </section>
+      <label class="model">Forecast from
+        <select id="model"></select>
+      </label>
+    </header>
 
-    <section class="card">
-      <h2>Next 12 hours</h2>
-      <div class="hourly" id="hourly"></div>
-    </section>
+    <div class="grid">
+      <div class="col">
+        <section class="now">
+          <div>
+            <div class="place" id="place">Loading…</div>
+            <div class="temp" id="temp">--°</div>
+            <div class="cond" id="cond">&nbsp;</div>
+            <div class="hilo" id="hilo"></div>
+            <div class="updated" id="updated"></div>
+          </div>
+          <div class="now-icon" id="nowIcon"></div>
+        </section>
 
-    <section class="card">
-      <h2>7-day forecast</h2>
-      <div class="daily" id="daily"></div>
-    </section>
+        <section id="alerts" class="alerts" hidden></section>
+        <div id="error" class="error-banner" hidden></div>
 
-    <section class="card">
-      <h2>Traffic cameras</h2>
-      <div id="cameras"></div>
-    </section>
-  </main>
+        <section class="card">
+          <div class="card-head">
+            <div>
+              <h2>Hourly forecast</h2>
+              <p class="sub">Next 24 hours</p>
+            </div>
+            <div class="arrows">
+              <button type="button" class="icon-btn" id="hPrev" aria-label="Earlier">&#8249;</button>
+              <button type="button" class="icon-btn" id="hNext" aria-label="Later">&#8250;</button>
+            </div>
+          </div>
+          <div class="hourly" id="hourly"></div>
+          <div class="divider"></div>
+          <div class="chart-label">Temperature</div>
+          <div class="tchart" id="tchart"></div>
+        </section>
 
-  <footer>
-    Forecast data: National Weather Service (api.weather.gov). Updated <span id="updated">never</span>.
-  </footer>
+        <section class="card">
+          <h2>Conditions</h2>
+          <div class="conds" id="conds"></div>
+        </section>
+
+        <section class="card">
+          <h2>Traffic cameras</h2>
+          <div id="cameras"></div>
+        </section>
+      </div>
+
+      <div class="col">
+        <section class="card">
+          <h2 id="pHead">Precipitation</h2>
+          <p class="sub">Next 3 hours, inches per 15 minutes</p>
+          <div class="pchart" id="pchart"></div>
+        </section>
+
+        <section class="card radar-card">
+          <div class="card-head pad">
+            <div>
+              <h2>Radar</h2>
+              <p class="sub">NEXRAD national mosaic</p>
+            </div>
+            <button type="button" class="btn" id="openRadar">
+              <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path d="M14 4h6v6M10 20H4v-6M20 4l-7 7M4 20l7-7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+              Open radar
+            </button>
+          </div>
+          <div id="radar" class="radar-small"></div>
+        </section>
+
+        <section class="card">
+          <h2>10-day forecast</h2>
+          <div class="daily" id="daily"></div>
+        </section>
+      </div>
+    </div>
+
+    <footer>
+      Weather data by <a href="https://open-meteo.com/" target="_blank">Open-Meteo</a> (CC BY 4.0) ·
+      Alerts from the <a href="https://www.weather.gov/" target="_blank">National Weather Service</a> ·
+      Radar from <a href="https://mesonet.agron.iastate.edu/" target="_blank">Iowa Environmental Mesonet</a>
+    </footer>
+  </div>
+
+  <div class="modal" id="radarModal" hidden>
+    <div class="modal-box">
+      <div class="card-head pad">
+        <div>
+          <h2>Radar</h2>
+          <p class="sub" id="modalPlace"></p>
+        </div>
+        <button type="button" class="icon-btn" id="closeRadar" aria-label="Close">&times;</button>
+      </div>
+      <div id="radarBig" class="radar-big"></div>
+    </div>
+  </div>
 
   <script src="cameras.js"></script>
+  <script src="icons.js"></script>
+  <script src="radar.js"></script>
   <script src="app.js"></script>
 </body>
 </html>
