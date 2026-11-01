@@ -58,10 +58,6 @@
           <div class="conds" id="conds"></div>
         </section>
 
-        <section class="card">
-          <h2>Traffic cameras</h2>
-          <div id="cameras"></div>
-        </section>
       </div>
 
       <div class="col">
@@ -71,18 +67,18 @@
           <div class="pchart" id="pchart"></div>
         </section>
 
-        <section class="card radar-card">
+        <section class="card cam-card">
           <div class="card-head pad">
             <div>
-              <h2>Radar</h2>
-              <p class="sub">NEXRAD national mosaic</p>
+              <h2>Traffic cameras</h2>
+              <p class="sub" id="camSub">Oklahoma DOT</p>
             </div>
-            <button type="button" class="btn" id="openRadar">
+            <button type="button" class="btn" id="openCams" hidden>
               <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path d="M14 4h6v6M10 20H4v-6M20 4l-7 7M4 20l7-7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-              Open radar
+              View all
             </button>
           </div>
-          <div id="radar" class="radar-small"></div>
+          <div class="cam-body" id="cameras"></div>
         </section>
 
         <section class="card">
@@ -94,27 +90,25 @@
 
     <footer>
       Weather data by <a href="https://open-meteo.com/" target="_blank">Open-Meteo</a> (CC BY 4.0) ·
-      Alerts from the <a href="https://www.weather.gov/" target="_blank">National Weather Service</a> ·
-      Radar from <a href="https://mesonet.agron.iastate.edu/" target="_blank">Iowa Environmental Mesonet</a>
+      Alerts from the <a href="https://www.weather.gov/" target="_blank">National Weather Service</a>
     </footer>
   </div>
 
-  <div class="modal" id="radarModal" hidden>
+  <div class="modal" id="camModal" hidden>
     <div class="modal-box">
       <div class="card-head pad">
         <div>
-          <h2>Radar</h2>
+          <h2>Traffic cameras</h2>
           <p class="sub" id="modalPlace"></p>
         </div>
-        <button type="button" class="icon-btn" id="closeRadar" aria-label="Close">&times;</button>
+        <button type="button" class="icon-btn" id="closeCams" aria-label="Close">&times;</button>
       </div>
-      <div id="radarBig" class="radar-big"></div>
+      <div class="cam-grid" id="camGrid"></div>
     </div>
   </div>
 
   <script src="cameras.js"></script>
   <script src="icons.js"></script>
-  <script src="radar.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

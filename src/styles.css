@@ -11,6 +11,8 @@
   --danger: #ff5a5a;
 }
 * { box-sizing: border-box; }
+[hidden] { display: none !important; }
+img.broken { visibility: hidden; }
 html, body { margin: 0; background: var(--bg); color: var(--text); }
 body { font: 14px/1.4 "Segoe UI Variable Text", "Segoe UI", Inter, system-ui, sans-serif; }
 a { color: var(--accent); text-decoration: none; }
@@ -95,42 +97,38 @@ select { background: var(--card-2); color: var(--text); border: 1px solid var(--
 .cell .d { font-size: 12px; color: var(--muted); }
 .compass { flex: none; }
 
-/* Radar */
-.radar-card { padding: 0; overflow: hidden; }
+/* Traffic cameras */
+.cam-card { padding: 0; overflow: hidden; }
 .card-head.pad { padding: 20px 20px 0; margin-bottom: 14px; }
-.rmap.radar-small { height: 330px; }
-.rmap { position: relative; display: flex; flex-direction: column; height: 100%; }
-.rmap-view { position: relative; flex: 1; overflow: hidden; background: #0d1014; cursor: grab; touch-action: none; border-top: 1px solid var(--line); }
-.rmap-view.dragging { cursor: grabbing; }
-.rmap-layer, .rmap-frames { position: absolute; inset: 0; }
-.rmap-layer img { position: absolute; left: 0; top: 0; width: 256px; height: 256px; user-select: none; }
-.rmap-radar { opacity: 0; transition: opacity .15s; }
-.rmap-radar.on { opacity: .8; }
-.rmap-marker { position: absolute; left: -8px; top: -8px; width: 16px; height: 16px; border-radius: 50%; background: var(--accent); border: 3px solid #fff; box-shadow: 0 0 0 4px rgba(62,166,255,.3); }
-.rmap-zoom { position: absolute; right: 10px; top: 10px; display: grid; background: rgba(17,19,23,.85); border: 1px solid var(--line); border-radius: 7px; overflow: hidden; }
-.rmap-zoom button { width: 30px; height: 28px; background: none; border: 0; cursor: pointer; font-size: 17px; }
-.rmap-zoom button + button { border-top: 1px solid var(--line); }
-.rmap-zoom button:hover { background: var(--card-2); }
-.rmap-attr { position: absolute; left: 8px; bottom: 6px; font-size: 10px; color: #6c7682; }
-.rmap-bar { position: absolute; left: 12px; right: 12px; bottom: 22px; display: flex; gap: 10px; align-items: center; background: rgba(17,19,23,.92); border: 1px solid var(--line); border-radius: 9px; padding: 8px 10px; }
-.rmap-play { flex: none; width: 32px; height: 32px; border-radius: 6px; border: 0; background: #fff; cursor: pointer; position: relative; }
-.rmap-play::before, .rmap-play::after { content: ""; position: absolute; top: 10px; width: 4px; height: 12px; background: #111; }
-.rmap-play::before { left: 10px; }
-.rmap-play::after { left: 18px; }
-.rmap-play.paused::before { left: 12px; width: 0; height: 0; background: none; border-left: 11px solid #111; border-top: 7px solid transparent; border-bottom: 7px solid transparent; top: 9px; }
-.rmap-play.paused::after { display: none; }
-.rmap-track { flex: 1; min-width: 0; }
-.rmap-times { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); }
-.rmap-times b { color: var(--text); }
-.rmap-segs { display: flex; gap: 2px; margin-top: 6px; }
-.rmap-segs button { flex: 1; height: 6px; border: 0; padding: 0; border-radius: 1px; background: #3a414b; cursor: pointer; }
-.rmap-segs button.on { background: var(--accent); height: 14px; margin-top: -4px; }
+.cam-body { padding: 0 20px 20px; }
+.cam-main { position: relative; aspect-ratio: 16 / 9; background: #0d1014; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+.cam-main img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.cam-main .cap { position: absolute; left: 0; right: 0; bottom: 0; padding: 26px 12px 10px; background: linear-gradient(transparent, rgba(0,0,0,.85)); display: flex; justify-content: space-between; align-items: flex-end; gap: 10px; }
+.cam-main .cap b { font-size: 13px; }
+.cam-main .cap span { font-size: 11px; color: #c3cad3; white-space: nowrap; }
+.cam-main .live { position: absolute; left: 10px; top: 10px; font-size: 10px; font-weight: 700; letter-spacing: .06em; background: rgba(0,0,0,.6); padding: 3px 7px; border-radius: 4px; }
+.cam-main .live::before { content: ""; display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: #ff4d4d; margin-right: 5px; vertical-align: 1px; }
+.cam-nav { position: absolute; top: 50%; transform: translateY(-50%); width: 34px; height: 34px; border-radius: 50%; border: 0; background: rgba(0,0,0,.55); font-size: 22px; line-height: 1; cursor: pointer; }
+.cam-nav:hover { background: rgba(0,0,0,.8); }
+.cam-nav.prev { left: 10px; }
+.cam-nav.next { right: 10px; }
+.cam-thumbs { display: grid; grid-auto-flow: column; grid-auto-columns: 92px; gap: 8px; overflow-x: auto; margin-top: 10px; padding-bottom: 2px; scrollbar-width: thin; }
+.cam-thumbs button { padding: 0; border: 2px solid transparent; border-radius: 6px; overflow: hidden; background: #0d1014; cursor: pointer; aspect-ratio: 16 / 9; }
+.cam-thumbs button.on { border-color: var(--accent); }
+.cam-thumbs img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.cam-empty { aspect-ratio: 16 / 9; border: 1px dashed #2f353e; border-radius: 8px; display: grid; place-items: center; text-align: center; padding: 20px; color: var(--muted); }
+.cam-empty svg { color: #4a5360; margin-bottom: 8px; }
+.cam-empty b { display: block; color: var(--text); margin-bottom: 4px; }
+.cam-attr { font-size: 11px; color: var(--muted); margin-top: 10px; }
 
 /* Modal */
 .modal { position: fixed; inset: 0; background: rgba(0,0,0,.7); display: grid; place-items: center; z-index: 50; padding: 30px; }
 .modal[hidden] { display: none; }
-.modal-box { width: min(1300px, 100%); height: min(860px, 100%); background: var(--card); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; }
-.rmap.radar-big { flex: 1; height: auto; min-height: 0; }
+.modal-box { width: min(1300px, 100%); max-height: 100%; background: var(--card); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; }
+.cam-grid { overflow-y: auto; padding: 0 20px 20px; display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px; }
+.cam-grid figure { margin: 0; }
+.cam-grid img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; display: block; border-radius: 6px; background: #0d1014; }
+.cam-grid figcaption { font-size: 12px; color: var(--muted); margin-top: 5px; }
 
 /* 10-day */
 .daily { margin-top: 14px; }
@@ -145,12 +143,7 @@ select { background: var(--card-2); color: var(--text); border: 1px solid var(--
 .range i { position: absolute; top: 0; bottom: 0; border-radius: 3px; }
 .range b { position: absolute; top: 50%; width: 9px; height: 9px; margin: -4.5px 0 0 -4.5px; border-radius: 50%; background: #fff; border: 2px solid var(--card); box-sizing: content-box; }
 
-/* Cameras */
-.cams { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; margin-top: 12px; }
-.cam img { width: 100%; border-radius: 6px; display: block; background: var(--card-2); }
-.cam div { font-size: 12px; color: var(--muted); margin-top: 4px; }
 .muted { color: var(--muted); }
-#cameras > p { margin: 10px 0 0; }
 
 footer { text-align: center; color: var(--muted); font-size: 12px; padding: 22px 0 10px; }
 

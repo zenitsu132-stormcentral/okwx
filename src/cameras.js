@@ -14,5 +14,9 @@ window.OKWX_CAMERA_ATTRIBUTION = 'Camera images courtesy of the Oklahoma Departm
 // Refresh interval in seconds (match whatever ODOT allows).
 window.OKWX_CAMERA_REFRESH = 60;
 
-// Example shape: { name: 'I-35 @ Main St, Norman', city: 'Norman', imageUrl: 'https://...' }
+// Cameras within 50 km of the selected city are shown, nearest first.
+// Give each camera a lat/lon (preferred) or a city name.
+// Example:
+//   { name: 'I-35 @ Main St', lat: 35.2226, lon: -97.4395, imageUrl: 'https://...' },
+//   { name: 'I-44 @ Yale Ave', city: 'Tulsa', imageUrl: 'https://...' },
 window.OKWX_CAMERAS = [];

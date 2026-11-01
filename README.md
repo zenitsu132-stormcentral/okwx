@@ -7,14 +7,13 @@ A Windows desktop weather app focused on Oklahoma. ODOT traffic cameras will be 
 - Current conditions with feels-like, high and low
 - 24-hour forecast with icons and an interactive temperature chart
 - Precipitation for the next 3 hours in 15-minute steps
-- Animated NEXRAD radar (last 50 minutes) with pan, zoom and a full-size view
 - Conditions: wind compass and gusts, humidity and dew point, pressure trend, UV, visibility, air quality, precipitation
 - 10-day forecast with temperature range bars
 - "Forecast from" picker: Best match, NOAA GFS, NOAA HRRR, ECMWF, DWD ICON, Canada GEM
 - City search for any US location, and the app remembers your last pick
 - Active NWS watches and warnings
 - Refreshes on its own every 10 minutes
-- Traffic camera panel, turned off until ODOT approves it (see below)
+- Traffic camera viewer: a large live image, nearby camera thumbnails and a "View all" grid. It's turned off until ODOT approves it (see below)
 
 ## Get the .exe
 
@@ -42,14 +41,14 @@ npm run dist     # build the .exe into dist/ (run this on Windows)
 ## Before you ship
 
 - In `weather.js`, replace `you@example.com` in `USER_AGENT` with your own contact. The NWS API asks apps to identify themselves.
-- **Data licenses:** Open-Meteo's free API and CARTO's free basemaps are for **non-commercial use**. If you sell the app or add ads, get an Open-Meteo API plan and a commercial basemap license (or switch providers).
+- **Data license:** Open-Meteo's free API is for **non-commercial use**. If you sell the app or add ads, get an Open-Meteo API plan (or switch providers).
 
 ## Traffic cameras
 
 Camera settings live in `src/cameras.js`. Keep `OKWX_CAMERAS_ENABLED = false` until the Oklahoma Department of Transportation gives you written permission. After that:
 
 1. Set `OKWX_CAMERAS_ENABLED = true`.
-2. Add cameras to `OKWX_CAMERAS` using the image URLs or feed ODOT gives you.
+2. Add cameras to `OKWX_CAMERAS` using the image URLs or feed ODOT gives you. Give each one a `lat`/`lon` so the app can show the cameras within 50 km of the selected city, nearest first.
 3. Set `OKWX_CAMERA_REFRESH` and the attribution text to match ODOT's terms.
 
 ## Project layout
@@ -61,7 +60,6 @@ preload.js         Safe bridge between the page and main process
 src/index.html     App layout
 src/styles.css     Styling
 src/app.js         Search, model picker, rendering, auto-refresh
-src/radar.js       Animated radar map (no map library)
 src/icons.js       Weather icons
 src/cameras.js     Traffic camera settings
 .github/workflows/build.yml   Builds the Windows .exe on GitHub Actions
@@ -71,8 +69,6 @@ src/cameras.js     Traffic camera settings
 
 - Forecast, air quality and place search: [Open-Meteo](https://open-meteo.com) (CC BY 4.0)
 - Alerts: [National Weather Service API](https://www.weather.gov/documentation/services-web-api)
-- Radar: NEXRAD composite from [Iowa Environmental Mesonet](https://mesonet.agron.iastate.edu)
-- Basemap: © OpenStreetMap contributors © CARTO
 
 Not affiliated with any of these providers or with ODOT.
 
