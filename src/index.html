@@ -10,6 +10,7 @@
 <body>
   <div class="wrap">
     <header class="topbar">
+      <div class="brand">ok<span>wx</span></div>
       <div class="search">
         <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"/><path d="M20 20l-4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
         <input id="search" type="search" placeholder="Search a city" autocomplete="off" spellcheck="false" aria-label="Search a city" />
@@ -20,78 +21,111 @@
       </label>
     </header>
 
-    <div class="grid">
-      <div class="col">
-        <section class="now">
-          <div>
-            <div class="place" id="place">Loading…</div>
+    <!-- Current conditions and the next 3 hours -->
+    <div class="row hero">
+      <section class="now">
+        <div class="now-main">
+          <div class="place" id="place">Loading…</div>
+          <div class="now-temp">
             <div class="temp" id="temp">--°</div>
-            <div class="cond" id="cond">&nbsp;</div>
-            <div class="hilo" id="hilo"></div>
-            <div class="updated" id="updated"></div>
+            <div class="now-icon" id="nowIcon"></div>
           </div>
-          <div class="now-icon" id="nowIcon"></div>
-        </section>
+          <div class="cond" id="cond">&nbsp;</div>
+          <div class="hilo" id="hilo"></div>
+          <div class="updated" id="updated"></div>
+        </div>
+      </section>
 
-        <section id="alerts" class="alerts" hidden></section>
-        <div id="error" class="error-banner" hidden></div>
-
-        <section class="card">
-          <div class="card-head">
-            <div>
-              <h2>Hourly forecast</h2>
-              <p class="sub">Next 24 hours</p>
-            </div>
-            <div class="arrows">
-              <button type="button" class="icon-btn" id="hPrev" aria-label="Earlier">&#8249;</button>
-              <button type="button" class="icon-btn" id="hNext" aria-label="Later">&#8250;</button>
-            </div>
-          </div>
-          <div class="hourly" id="hourly"></div>
-          <div class="divider"></div>
-          <div class="chart-label">Temperature</div>
-          <div class="tchart" id="tchart"></div>
-        </section>
-
-        <section class="card">
-          <h2>Conditions</h2>
-          <div class="conds" id="conds"></div>
-        </section>
-
-      </div>
-
-      <div class="col">
-        <section class="card">
-          <h2 id="pHead">Precipitation</h2>
-          <p class="sub">Next 3 hours, inches per 15 minutes</p>
-          <div class="pchart" id="pchart"></div>
-        </section>
-
-        <section class="card cam-card">
-          <div class="card-head pad">
-            <div>
-              <h2>Traffic cameras</h2>
-              <p class="sub" id="camSub">Oklahoma DOT</p>
-            </div>
-            <button type="button" class="btn" id="openCams" hidden>
-              <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path d="M14 4h6v6M10 20H4v-6M20 4l-7 7M4 20l7-7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-              View all
-            </button>
-          </div>
-          <div class="cam-body" id="cameras"></div>
-        </section>
-
-        <section class="card">
-          <h2>10-day forecast</h2>
-          <div class="daily" id="daily"></div>
-        </section>
-      </div>
+      <section class="card">
+        <h2 id="pHead">Precipitation</h2>
+        <p class="sub">Next 3 hours, inches per 15 minutes</p>
+        <div class="pchart" id="pchart"></div>
+      </section>
     </div>
+
+    <section id="alerts" class="alerts" hidden></section>
+    <div id="error" class="error-banner" hidden></div>
+
+    <!-- Live view: radar and traffic cameras side by side -->
+    <div class="row live">
+      <section class="card live-card radar-card">
+        <div class="card-head pad">
+          <div>
+            <h2>Radar</h2>
+            <p class="sub">NEXRAD national mosaic</p>
+          </div>
+          <button type="button" class="btn" id="openRadar">
+            <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path d="M14 4h6v6M10 20H4v-6M20 4l-7 7M4 20l7-7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            Expand
+          </button>
+        </div>
+        <div id="radar" class="radar-small"></div>
+      </section>
+
+      <section class="card live-card cam-card">
+        <div class="card-head pad">
+          <div>
+            <h2>Traffic cameras</h2>
+            <p class="sub" id="camSub">Oklahoma DOT</p>
+          </div>
+          <button type="button" class="btn" id="openCams" hidden>
+            <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1" fill="none" stroke="currentColor" stroke-width="2"/><rect x="14" y="3" width="7" height="7" rx="1" fill="none" stroke="currentColor" stroke-width="2"/><rect x="3" y="14" width="7" height="7" rx="1" fill="none" stroke="currentColor" stroke-width="2"/><rect x="14" y="14" width="7" height="7" rx="1" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+            View all
+          </button>
+        </div>
+        <div class="cam-body" id="cameras"></div>
+      </section>
+    </div>
+
+    <!-- Forecasts -->
+    <div class="row forecasts">
+      <section class="card">
+        <div class="card-head">
+          <div>
+            <h2>Hourly forecast</h2>
+            <p class="sub">Next 24 hours</p>
+          </div>
+          <div class="arrows">
+            <button type="button" class="icon-btn" id="hPrev" aria-label="Earlier">&#8249;</button>
+            <button type="button" class="icon-btn" id="hNext" aria-label="Later">&#8250;</button>
+          </div>
+        </div>
+        <div class="hourly" id="hourly"></div>
+        <div class="divider"></div>
+        <div class="chart-label">Temperature</div>
+        <div class="tchart" id="tchart"></div>
+      </section>
+
+      <section class="card">
+        <h2>10-day forecast</h2>
+        <div class="daily" id="daily"></div>
+      </section>
+    </div>
+
+    <section class="card">
+      <h2>Conditions</h2>
+      <div class="conds" id="conds"></div>
+    </section>
 
     <footer>
       Weather data by <a href="https://open-meteo.com/" target="_blank">Open-Meteo</a> (CC BY 4.0) ·
-      Alerts from the <a href="https://www.weather.gov/" target="_blank">National Weather Service</a>
+      Alerts from the <a href="https://www.weather.gov/" target="_blank">National Weather Service</a> ·
+      Radar from <a href="https://mesonet.agron.iastate.edu/" target="_blank">Iowa Environmental Mesonet</a> ·
+      Map © <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> © <a href="https://carto.com/attributions" target="_blank">CARTO</a>
     </footer>
+  </div>
+
+  <div class="modal" id="radarModal" hidden>
+    <div class="modal-box tall">
+      <div class="card-head pad">
+        <div>
+          <h2>Radar</h2>
+          <p class="sub" id="radarModalPlace"></p>
+        </div>
+        <button type="button" class="icon-btn" id="closeRadar" aria-label="Close">&times;</button>
+      </div>
+      <div id="radarBig" class="radar-big"></div>
+    </div>
   </div>
 
   <div class="modal" id="camModal" hidden>
@@ -99,7 +133,7 @@
       <div class="card-head pad">
         <div>
           <h2>Traffic cameras</h2>
-          <p class="sub" id="modalPlace"></p>
+          <p class="sub" id="camModalPlace"></p>
         </div>
         <button type="button" class="icon-btn" id="closeCams" aria-label="Close">&times;</button>
       </div>
@@ -109,6 +143,7 @@
 
   <script src="cameras.js"></script>
   <script src="icons.js"></script>
+  <script src="radar.js"></script>
   <script src="app.js"></script>
 </body>
 </html>
