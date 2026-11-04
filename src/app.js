@@ -64,7 +64,6 @@
     document.body.classList.add('loading');
     $('place').textContent = placeLabel(place);
     $('modalPlace').textContent = placeLabel(place);
-    camIndex = 0;
     renderCameras();
     try {
       data = await window.okwx.getWeather({ lat: place.lat, lon: place.lon, model });
@@ -119,12 +118,19 @@
 
   function renderAlerts() {
     const box = $('alerts');
-    box.hidden = data.alerts.length === 0;
-    box.innerHTML = data.alerts.map((a) => `
+    box.hidden = data.alerts.length === 0 && !data.alertsError;
+    if (data.alertsError) {
+      box.innerHTML = '<div class="alert unavailable">Couldn\'t check for NWS watches and warnings. The app will try again at the next refresh.</div>';
+      return;
+    }
+    box.innerHTML = data.alerts.map((a) => {
+      const ends = Date.parse(a.ends);
+      return `
       <details class="alert ${esc(a.severity)}">
-        <summary>${esc(a.event)}${a.ends ? ` · until ${esc(new Date(a.ends).toLocaleString('en-US', { weekday: 'short', hour: 'numeric', minute: '2-digit' }))}` : ''}</summary>
+        <summary>${esc(a.event)}${ok(ends) ? ` · until ${esc(fmt(ends / 1000, { weekday: 'short', hour: 'numeric', minute: '2-digit' }))}` : ''}</summary>
         <p>${esc(a.headline)}\n\n${esc(a.description)}${a.instruction ? `\n\n${esc(a.instruction)}` : ''}</p>
-      </details>`).join('');
+      </details>`;
+    }).join('');
   }
 
   // ---- Hourly strip + temperature chart ----
@@ -468,14 +474,17 @@
     if (!cams.length) return;
     camStamp = Date.now();
     const pre = new Image();
-    pre.onload = () => {
-      camShotAt = Date.now();
+    // Swap in the new frames even if the main camera fails, so the thumbnails
+    // and grid keep refreshing.
+    const swap = () => {
       const img = $('camImg');
       if (img) img.src = pre.src;
       document.querySelectorAll('.cam-thumbs img').forEach((t, i) => { if (cams[i]) t.src = camSrc(cams[i]); });
       if (!$('camModal').hidden) renderCamGrid();
       renderCamAge();
     };
+    pre.onload = () => { camShotAt = Date.now(); swap(); };
+    pre.onerror = swap;
     pre.src = camSrc(cams[camIndex]);
   }
 
@@ -531,6 +540,7 @@
     const choose = (p) => {
       place = { name: p.name, region: p.region, lat: p.lat, lon: p.lon };
       store.set('okwx.place', place);
+      camIndex = 0; // new place, so start from its nearest camera
       input.value = '';
       input.blur();
       hide();
