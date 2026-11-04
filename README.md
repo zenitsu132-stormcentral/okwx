@@ -12,6 +12,7 @@ A Windows desktop weather app focused on Oklahoma. ODOT traffic cameras will be 
 - "Forecast from" picker: Best match, NOAA GFS, NOAA HRRR, ECMWF, DWD ICON, Canada GEM
 - City search for any US location, and the app remembers your last pick
 - Active NWS watches and warnings
+- Animated NEXRAD radar loop you can pan, zoom and expand
 - Refreshes on its own every 10 minutes
 - Traffic camera viewer: a large live image, nearby camera thumbnails and a "View all" grid. It's turned off until ODOT approves it (see below)
 
@@ -61,6 +62,7 @@ src/index.html     App layout
 src/styles.css     Styling
 src/app.js         Search, model picker, rendering, auto-refresh
 src/icons.js       Weather icons
+src/radar.js       Radar map (no map library)
 src/cameras.js     Traffic camera settings
 .github/workflows/build.yml   Builds the Windows .exe on GitHub Actions
 ```
@@ -69,6 +71,8 @@ src/cameras.js     Traffic camera settings
 
 - Forecast, air quality and place search: [Open-Meteo](https://open-meteo.com) (CC BY 4.0)
 - Alerts: [National Weather Service API](https://www.weather.gov/documentation/services-web-api)
+- Radar: [Iowa Environmental Mesonet](https://mesonet.agron.iastate.edu/) NEXRAD tiles
+- Map: Esri World Dark Gray Canvas (Esri, HERE, Garmin, © OpenStreetMap contributors)
 
 Not affiliated with any of these providers or with ODOT.
 

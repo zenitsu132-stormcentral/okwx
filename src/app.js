@@ -34,6 +34,8 @@
   let camIndex = 0;     // which camera is shown large
   let camStamp = Date.now();
   let camShotAt = Date.now();
+  let radar = null;     // radar card map
+  let radarBig = null;  // expanded radar, only while its modal is open
 
   // ---- Time helpers (shown in the location's own time zone) ----
   let utcOffset = 0;
@@ -63,7 +65,9 @@
   async function load() {
     document.body.classList.add('loading');
     $('place').textContent = placeLabel(place);
-    $('modalPlace').textContent = placeLabel(place);
+    $('camModalPlace').textContent = placeLabel(place);
+    $('radarModalPlace').textContent = placeLabel(place);
+    radar.setLocation(place.lat, place.lon);
     renderCameras();
     try {
       data = await window.okwx.getWeather({ lat: place.lat, lon: place.lon, model });
@@ -526,6 +530,21 @@
     document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !modal.hidden) close(); });
   }
 
+  // ---- Radar ----
+  function setupRadar() {
+    radar = new RadarMap($('radar'), { zoom: 6 });
+    const modal = $('radarModal');
+    const close = () => { modal.hidden = true; if (radarBig) { radarBig.destroy(); radarBig = null; } };
+    $('openRadar').addEventListener('click', () => {
+      modal.hidden = false;
+      radarBig = new RadarMap($('radarBig'), { zoom: 7, maxZoom: 10 });
+      radarBig.setLocation(place.lat, place.lon);
+    });
+    $('closeRadar').addEventListener('click', close);
+    modal.addEventListener('click', (e) => { if (e.target === modal) close(); });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !modal.hidden) close(); });
+  }
+
   // ---- Search ----
   function setupSearch() {
     const input = $('search'), list = $('results');
@@ -586,6 +605,7 @@
 
   // ---- Start ----
   async function start() {
+    setupRadar();
     setupCameras();
     setupSearch();
     $('hPrev').addEventListener('click', () => $('hourly').scrollBy({ left: -$('hourly').clientWidth * 0.8 }));
