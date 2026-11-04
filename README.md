@@ -46,24 +46,40 @@ npm run dist     # build the .exe into dist/ (run this on Windows)
 
 ## Traffic cameras
 
-Camera settings live in `src/cameras.js`. Keep `OKWX_CAMERAS_ENABLED = false` until the Oklahoma Department of Transportation gives you written permission. After that:
+Camera settings live in `cameras.config.js`. Keep `enabled: false` until the Oklahoma Department of Transportation gives you written permission. After that:
 
-1. Set `OKWX_CAMERAS_ENABLED = true`.
-2. Add cameras to `OKWX_CAMERAS` using the image URLs or feed ODOT gives you. Give each one a `lat`/`lon` so the app can show the cameras within 50 km of the selected city, nearest first.
-3. Set `OKWX_CAMERA_REFRESH` and the attribution text to match ODOT's terms.
+1. Set `enabled: true`.
+2. Add cameras to `cameras` using the snapshot image URLs or feed ODOT gives you. Give each one a unique `id` and a `lat`/`lon` so the app can show the cameras within 50 km of the selected city, nearest first. `pageUrl` (optional) links to that camera's official page.
+3. Set `refreshSeconds` and `attribution` to match ODOT's terms.
+
+As of November 2026, OKTraffic.org publishes no public API or developer feed, and ODOT's open data portal has no camera dataset. Ask ODOT which URLs or feed to use when you ask for permission, rather than pulling from the site's internal endpoints.
+
+**How the app protects ODOT's servers** (`camera-service.js`):
+
+- The page never contacts ODOT. It loads `okwx-cam://cam/<id>`, which the main process answers from its cache.
+- Each camera is fetched from ODOT **at most once every 5–10 minutes**. `refreshSeconds` is clamped to 300–600, however often the page asks.
+- The cache is kept on disk, so restarting the app doesn't refetch. Requests for the same camera at the same time share one download, and at most 3 downloads run at once.
+- Only cameras someone is looking at are fetched. Re-checks send `If-None-Match` / `If-Modified-Since`, so an unchanged image costs almost nothing.
+- If a fetch fails, or ODOT sends something that isn't an image (a format change), the app keeps the last good image and doesn't try again until the next window.
+- Every request sends `User-Agent: okwx/<version> (contact: <repo URL>)` from `weather.js`.
+
+**Limits:** each installed copy has its own cache, so 100 users can mean up to 100 requests per camera per window. If the app gets many users, run a small shared server that does this caching once for everyone and point the app at it.
+
+The camera card credits ODOT and OKTraffic.org, and an **Official camera page** button always links to OKTraffic.org. If a camera image fails to load, the card shows **View on OKTraffic.org** instead.
 
 ## Project layout
 
 ```
 main.js            Electron main process (window + data requests)
 weather.js         Data layer: Open-Meteo forecast/AQI/search, NWS alerts
+camera-service.js  Camera image cache (ODOT is fetched at most once per 5–10 min)
+cameras.config.js  Traffic camera settings
 preload.js         Safe bridge between the page and main process
 src/index.html     App layout
 src/styles.css     Styling
 src/app.js         Search, model picker, rendering, auto-refresh
 src/icons.js       Weather icons
 src/radar.js       Radar map (no map library)
-src/cameras.js     Traffic camera settings
 .github/workflows/build.yml   Builds the Windows .exe on GitHub Actions
 ```
 

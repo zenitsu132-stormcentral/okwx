@@ -33,7 +33,8 @@
   let cams = [];        // cameras near the current place, nearest first
   let camIndex = 0;     // which camera is shown large
   let camStamp = Date.now();
-  let camShotAt = Date.now();
+  let camConfig = { enabled: false, cameras: [], attribution: '', officialUrl: null, refreshSeconds: 300 };
+  let camStatus = {};   // id -> { imageAt, error } from the main process cache
   let radar = null;     // radar card map
   let radarBig = null;  // expanded radar, only while its modal is open
 
@@ -415,13 +416,16 @@
   }
   const CAM_RADIUS_KM = 50;
   const CAM_ICON = '<svg viewBox="0 0 24 24" width="34" height="34" aria-hidden="true"><path d="M4 7h11a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1zm12 4l5-3v8l-5-3" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>';
-  // Add a cache-buster to web URLs so each refresh fetches a fresh frame.
-  const camSrc = (c) => (/^https?:/i.test(c.imageUrl)
-    ? `${c.imageUrl}${c.imageUrl.includes('?') ? '&' : '?'}t=${camStamp}`
-    : c.imageUrl);
+  // Images come from the main process cache, never straight from ODOT. The
+  // version number only makes the <img> ask the cache again; the cache decides
+  // whether ODOT is contacted (at most once per 5–10 minutes per camera).
+  const camSrc = (c) => `okwx-cam://cam/${encodeURIComponent(c.id)}?v=${camStamp}`;
+  const officialLink = (url, label) => (url
+    ? `<a class="btn cam-official" href="${esc(url)}" target="_blank" rel="noopener">${esc(label)} &#8599;</a>`
+    : '');
 
   function nearbyCameras() {
-    return window.OKWX_CAMERAS
+    return camConfig.cameras
       .map((c) => ({
         ...c,
         km: ok(c.lat) && ok(c.lon) ? distanceKm(place.lat, place.lon, c.lat, c.lon) : (c.city === place.name ? 0 : Infinity),
@@ -432,18 +436,20 @@
 
   function renderCameras() {
     const box = $('cameras');
-    const enabled = !!window.OKWX_CAMERAS_ENABLED;
+    const enabled = camConfig.enabled;
+    const official = camConfig.officialUrl;
     cams = enabled ? nearbyCameras() : [];
     $('openCams').hidden = cams.length < 2;
     $('camSub').textContent = cams.length
-      ? `${cams.length} camera${cams.length === 1 ? '' : 's'} near ${placeLabel(place)}`
-      : 'Oklahoma DOT';
+      ? `${cams.length} camera${cams.length === 1 ? '' : 's'} near ${placeLabel(place)} · Oklahoma DOT`
+      : 'Oklahoma DOT · OKTraffic.org';
 
     if (!enabled || !cams.length) {
       box.innerHTML = `<div class="cam-empty"><div>${CAM_ICON}
         ${enabled
           ? `<b>No cameras nearby</b>There are no traffic cameras within ${CAM_RADIUS_KM} km of ${esc(placeLabel(place))}.`
           : '<b>Coming soon</b>Live traffic cameras will appear here once the Oklahoma DOT approves their use.'}
+        ${official ? `<div class="cam-empty-link">${officialLink(official, 'See cameras on OKTraffic.org')}</div>` : ''}
       </div></div>`;
       return;
     }
@@ -453,24 +459,38 @@
     box.innerHTML = `
       <div class="cam-main">
         <img id="camImg" src="${esc(camSrc(cur))}" alt="${esc(cur.name)}" />
-        <span class="live">LIVE</span>
+        <span class="live">ODOT</span>
         ${cams.length > 1 ? '<button type="button" class="cam-nav prev" data-step="-1" aria-label="Previous camera">&#8249;</button><button type="button" class="cam-nav next" data-step="1" aria-label="Next camera">&#8250;</button>' : ''}
         <div class="cap"><b>${esc(cur.name)}</b><span id="camAge"></span></div>
+        <div class="cam-fail">
+          <div><b>This camera isn't loading</b>The feed may be down or may have changed format.
+          ${officialLink(cur.pageUrl || official, 'View on OKTraffic.org')}</div>
+        </div>
       </div>
       ${cams.length > 1 ? `<div class="cam-thumbs">${cams.map((c, i) => `
         <button type="button" data-i="${i}" class="${i === camIndex ? 'on' : ''}" title="${esc(c.name)}">
           <img src="${esc(camSrc(c))}" alt="" loading="lazy" />
         </button>`).join('')}</div>` : ''}
-      <div class="cam-attr">${esc(window.OKWX_CAMERA_ATTRIBUTION)}</div>`;
-    renderCamAge();
+      <div class="cam-attr"><span>${esc(camConfig.attribution)}</span>${officialLink(cur.pageUrl || official, 'Official camera page')}</div>`;
+    updateCamStatus();
     box.querySelector('.cam-thumbs button.on')?.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+  }
+
+  // Ask the cache when the shown images were taken and whether a feed is failing.
+  async function updateCamStatus() {
+    if (!cams.length) return;
+    try { camStatus = await window.okwx.cameraStatus(cams.map((c) => c.id)); } catch { /* keep old status */ }
+    renderCamAge();
   }
 
   function renderCamAge() {
     const el = $('camAge');
-    if (!el) return;
-    const s = Math.round((Date.now() - camShotAt) / 1000);
-    el.textContent = s < 10 ? 'Updated just now' : s < 60 ? `Updated ${s}s ago` : `Updated ${Math.round(s / 60)} min ago`;
+    const cur = cams[camIndex];
+    if (!el || !cur) return;
+    const st = camStatus[cur.id] || {};
+    if (!st.imageAt) { el.textContent = ''; return; }
+    const mins = Math.round((Date.now() - st.imageAt) / 60000);
+    el.textContent = `${st.error ? 'Feed problem · last image ' : 'Image from '}${mins < 1 ? 'just now' : `${mins} min ago`}`;
   }
 
   // Reload camera images without flicker: load the new frame first, then swap it in.
@@ -485,9 +505,9 @@
       if (img) img.src = pre.src;
       document.querySelectorAll('.cam-thumbs img').forEach((t, i) => { if (cams[i]) t.src = camSrc(cams[i]); });
       if (!$('camModal').hidden) renderCamGrid();
-      renderCamAge();
+      updateCamStatus();
     };
-    pre.onload = () => { camShotAt = Date.now(); swap(); };
+    pre.onload = swap;
     pre.onerror = swap;
     pre.src = camSrc(cams[camIndex]);
   }
@@ -505,6 +525,8 @@
     const onImg = (e) => {
       if (e.target.tagName !== 'IMG') return;
       e.target.classList.toggle('broken', e.type === 'error');
+      // The main image failing shows the "view on OKTraffic.org" fallback.
+      if (e.target.id === 'camImg') e.target.parentElement.classList.toggle('failed', e.type === 'error');
     };
     ['error', 'load'].forEach((t) => {
       $('cameras').addEventListener(t, onImg, true);
@@ -615,13 +637,14 @@
       clearTimeout(rt);
       rt = setTimeout(() => { if (data) { drawTempChart(); renderPrecip(); } }, 80);
     }).observe($('tchart'));
+    try { camConfig = await window.okwx.getCameras(); } catch (e) { console.error(e); }
     await setupModels();
     await load();
     setInterval(load, 10 * 60 * 1000);
     setInterval(renderUpdated, 30 * 1000);
-    if (window.OKWX_CAMERAS_ENABLED) {
-      setInterval(refreshCameras, (window.OKWX_CAMERA_REFRESH || 60) * 1000);
-      setInterval(renderCamAge, 5000);
+    if (camConfig.enabled) {
+      setInterval(refreshCameras, camConfig.refreshSeconds * 1000);
+      setInterval(renderCamAge, 30 * 1000);
     }
   }
 
