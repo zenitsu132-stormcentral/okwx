@@ -56,6 +56,7 @@ select { background: var(--card-2); color: var(--text); border: 1px solid var(--
 .alerts { display: grid; gap: 8px; }
 .alert { border: 1px solid #4a3a14; border-left: 4px solid var(--warn); background: #1d1708; padding: 10px 14px; border-radius: 8px; }
 .alert.Severe, .alert.Extreme { border-color: #4d1b1b; border-left-color: var(--danger); background: #1f0d0d; }
+.alert.unavailable { border-color: var(--line); border-left-color: var(--muted); background: var(--card-2); color: #c3cad3; }
 .alert summary { cursor: pointer; font-weight: 600; }
 .alert p { white-space: pre-wrap; color: #c3cad3; margin: 8px 0 0; }
 .error-banner { background: #1f0d0d; border: 1px solid #4d1b1b; color: #ffb4b4; padding: 10px 14px; border-radius: 8px; }

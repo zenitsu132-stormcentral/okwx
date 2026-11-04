@@ -40,7 +40,7 @@ npm run dist     # build the .exe into dist/ (run this on Windows)
 
 ## Before you ship
 
-- In `weather.js`, replace `you@example.com` in `USER_AGENT` with your own contact. The NWS API asks apps to identify themselves.
+- `USER_AGENT` in `weather.js` gives the NWS this repo's URL as the contact, because the NWS API asks apps to identify themselves. Change it to an email address if you'd rather be contacted that way.
 - **Data license:** Open-Meteo's free API is for **non-commercial use**. If you sell the app or add ads, get an Open-Meteo API plan (or switch providers).
 
 ## Traffic cameras

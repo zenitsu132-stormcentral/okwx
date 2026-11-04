@@ -8,8 +8,8 @@
 // (which respects the user's system proxy settings).
 
 // NWS asks apps to identify themselves with a contact address.
-// Replace this with your own email or project URL.
-const USER_AGENT = 'okwx/0.2 (contact: you@example.com)';
+// Change this if you'd rather NWS contact you by email.
+const USER_AGENT = 'okwx/0.2 (https://github.com/zenitsu132-stormcentral/okwx)';
 
 const MODELS = {
   best_match: 'Best match',
@@ -75,6 +75,8 @@ async function getWeather(fetchFn, { lat, lon, model = 'best_match' }) {
     modelName: MODELS[model],
     forecast: forecast.value,
     aqi: air.status === 'fulfilled' ? air.value?.current?.us_aqi ?? null : null,
+    // Lets the page tell "no alerts" apart from "couldn't check for alerts".
+    alertsError: alerts.status === 'rejected',
     alerts: alerts.status === 'fulfilled'
       ? alerts.value.features.map((f) => ({
           event: f.properties.event,
