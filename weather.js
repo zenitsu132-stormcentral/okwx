@@ -7,9 +7,9 @@
 // Each function takes a fetch function so main.js can pass Electron's net.fetch
 // (which respects the user's system proxy settings).
 
-// NWS asks apps to identify themselves with a contact address.
-// Change this if you'd rather NWS contact you by email.
-const USER_AGENT = 'okwx/0.2 (https://github.com/zenitsu132-stormcentral/okwx)';
+// Sent with every request (NWS, ODOT cameras) so server admins can see who we
+// are and how to reach us. Add an email address here if you'd rather be emailed.
+const USER_AGENT = `okwx/${require('./package.json').version} (contact: https://github.com/zenitsu132-stormcentral/okwx)`;
 
 const MODELS = {
   best_match: 'Best match',
@@ -101,4 +101,4 @@ async function searchPlaces(fetchFn, query) {
   }));
 }
 
-module.exports = { getWeather, searchPlaces, MODELS };
+module.exports = { getWeather, searchPlaces, MODELS, USER_AGENT };

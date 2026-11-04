@@ -16,7 +16,7 @@
   "build": {
     "appId": "com.okwx.app",
     "productName": "okwx",
-    "files": ["main.js", "preload.js", "weather.js", "src/**/*"],
+    "files": ["main.js", "preload.js", "weather.js", "camera-service.js", "cameras.config.js", "src/**/*"],
     "win": {
       "target": ["nsis", "portable"]
     },

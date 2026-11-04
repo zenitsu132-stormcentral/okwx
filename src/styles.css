@@ -145,7 +145,6 @@ select { background: var(--card-2); color: var(--text); border: 1px solid var(--
 .cam-main .cap b { font-size: 13px; }
 .cam-main .cap span { font-size: 11px; color: #c3cad3; white-space: nowrap; }
 .cam-main .live { position: absolute; left: 10px; top: 10px; font-size: 10px; font-weight: 700; letter-spacing: .06em; background: rgba(0,0,0,.6); padding: 3px 7px; border-radius: 4px; }
-.cam-main .live::before { content: ""; display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: #ff4d4d; margin-right: 5px; vertical-align: 1px; }
 .cam-nav { position: absolute; top: 50%; transform: translateY(-50%); width: 34px; height: 34px; border-radius: 50%; border: 0; background: rgba(0,0,0,.55); font-size: 22px; line-height: 1; cursor: pointer; }
 .cam-nav:hover { background: rgba(0,0,0,.8); }
 .cam-nav.prev { left: 10px; }
@@ -157,7 +156,16 @@ select { background: var(--card-2); color: var(--text); border: 1px solid var(--
 .cam-empty { aspect-ratio: 16 / 9; border: 1px dashed #2f353e; border-radius: 8px; display: grid; place-items: center; text-align: center; padding: 20px; color: var(--muted); }
 .cam-empty svg { color: #4a5360; margin-bottom: 8px; }
 .cam-empty b { display: block; color: var(--text); margin-bottom: 4px; }
-.cam-attr { font-size: 11px; color: var(--muted); margin-top: 10px; }
+.cam-attr { font-size: 11px; color: var(--muted); margin-top: 10px; display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+.btn.cam-official { font-size: 12px; padding: 4px 10px; color: var(--text); white-space: nowrap; }
+.btn.cam-official:hover { text-decoration: none; }
+.cam-empty-link { margin-top: 12px; }
+/* Fallback when our copy of a camera can't be loaded (feed down or format changed). */
+.cam-fail { display: none; position: absolute; inset: 0; place-items: center; text-align: center; padding: 20px; color: var(--muted); background: #0d1014; }
+.cam-fail b { display: block; color: var(--text); margin-bottom: 4px; }
+.cam-fail .btn { margin-top: 12px; }
+.cam-main.failed .cam-fail { display: grid; }
+.cam-main.failed .cap { display: none; }
 
 /* Modal */
 .modal { position: fixed; inset: 0; background: rgba(0,0,0,.7); display: grid; place-items: center; z-index: 50; padding: 30px; }
